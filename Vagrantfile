@@ -67,8 +67,10 @@ Vagrant.configure("2") do |config|
   ############################################################
   ### General packages
   config.vm.provision "shell", inline: "apt-get -y update && apt-get -y upgrade"
+  # Python development packages
   config.vm.provision "shell", inline:
-    "apt-get -y install python python3 python-doc python3-doc python-pip python3-pip"
+    "apt-get -y install python python3 python-doc python3-doc python-pip \
+     python3-pip python-tox python3-tox"
   config.vm.provision :shell, inline: "apt-get -y install git"
   config.vm.provision "file", source: "~/.gitconfig", destination: "/home/vagrant/.gitconfig"
   config.vm.provision :shell, inline: "apt-get -y install vim"
