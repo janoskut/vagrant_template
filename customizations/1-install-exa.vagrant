@@ -1,0 +1,26 @@
+Vagrant.configure("2") do |config|
+
+  ############################################################
+  # Install EXA
+  config.vm.provision :shell, inline:
+    "apt-get -y install cmake cargo zlib1g-dev"
+  config.vm.provision :shell, inline: <<-SHELL
+    COMMAND=exa
+    echo "Installing $COMMAND..."
+    if command -v $COMMAND &> /dev/null; then
+      echo "  => $COMMAND is already installed."
+    else
+      echo "    > Downloading and installing..."
+      curl https://sh.rustup.rs -sSf | bash -s -- -y
+      echo "    > cloning exa repository.."
+      git clone https://github.com/ogham/exa.git && cd exa
+      echo "    > make install"
+      make install
+      echo "    > remove exa directory"
+      cd .. && rm -rf exa
+      echo "  => Done."
+    fi
+  SHELL
+  ############################################################
+
+end

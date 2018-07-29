@@ -22,11 +22,16 @@ vagrant halt
 ## Features
 
 - GIT
-- Python (2/3), Pip
+- Python (2/3), Pip, Tox
 - VIM
-  - Copy local .vimrc to machine
-- EXA
-  - Alias ls es exa
-- ZSH
-  - oh-my-zsh
-  - Agnoster theme
+
+## Customizations
+
+\*.sh shell scripts and \*.vagrant vagrant-files, residing next to the
+*Vagrantfile*, will be included automatically during provisioning.
+
+This allows to add user customizations as shell scripts, but also to
+adjust the vagrant and provider settings.
+
+Vagrant-files will be processed first, followed by the script files.
+All files are executed in their alphabetical order.

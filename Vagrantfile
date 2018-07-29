@@ -72,80 +72,30 @@ Vagrant.configure("2") do |config|
     "apt-get -y install python python3 python-doc python3-doc python-pip \
      python3-pip python-tox python3-tox"
   config.vm.provision :shell, inline: "apt-get -y install git"
-  config.vm.provision "file", source: "~/.gitconfig", destination: "/home/vagrant/.gitconfig"
   config.vm.provision :shell, inline: "apt-get -y install vim"
-  config.vm.provision "file", source: "~/.vimrc", destination: "/home/vagrant/.vimrc"
   ############################################################
-
-
-  ############################################################
-  # Install EXA
-  config.vm.provision :shell, inline:
-    "apt-get -y install cmake cargo zlib1g-dev"
-  config.vm.provision :shell, inline: <<-SHELL
-    COMMAND=exa
-    echo "Installing $COMMAND..."
-    if command -v $COMMAND &> /dev/null; then
-      echo "  => $COMMAND is already installed."
-    else
-      echo "    > Downloading and installing..."
-      curl https://sh.rustup.rs -sSf | bash -s -- -y
-      echo "    > cloning exa repository.."
-      git clone https://github.com/ogham/exa.git && cd exa
-      echo "    > make install"
-      make install
-      echo "    > remove exa directory"
-      cd .. && rm -rf exa
-      echo "  => Done."
-    fi
-  SHELL
-  ############################################################
-
-
-  ############################################################
-  # Install ZSH
-  config.vm.provision :shell, inline: "apt-get -y install zsh"
-  # Clone Oh My Zsh from the git repo
-  config.vm.provision :shell, privileged: false, inline: <<-SHELL
-    echo "Installing OH-MY-ZSH..."
-    if [[ ! -d ~/.oh-my-zsh ]]; then
-      git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
-      echo "  => Done."
-    else
-      echo "  => OH-MY-ZSH is already installed."
-    fi
-  SHELL
-  # Set ZSH as default shell
-  config.vm.provision :shell, inline: "chsh -s $(which zsh) vagrant"
-  # Configure .zshrc
-  config.vm.provision :shell, privileged: false, inline: <<-SHELL
-    if [[ ! -f ~/.zshrc ]]; then
-      echo "Initializing ~/.zshrc..."
-      cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
-      sed -i "s/^\\(ZSH_THEME\\s*=\\s*\\).*\\$/\\1agnoster/" ~/.zshrc
-      cat <<EOT >> ~/.zshrc
-
-# Use a different file for aliases
-if [ -f "${HOME}/.zshrc.local" ]; then
-  source "${HOME}/.zshrc.local"
-fi
-EOT
-      cat <<EOT > ~/.zshrc.local
-# Exa alias mapping
-alias ls='exa'
-alias la='exa -la'
-
-# Switch to vagrant synced working directory
-cd ~/sync/
-EOT
-      echo "  => Done."
-    else
-      echo "  => ~/zshrc is already there."
-    fi
-  SHELL
-  ############################################################
-
-
-  # Configure Vagrant to run this shell script when setting up our machine
-  # config.vm.provision :shell, path: "bootstrap.sh"
 end
+
+###############################################################################
+# Load user vagrant files
+###############################################################################
+Dir.glob('*.vagrant') do |vagrantfile|
+  load vagrantfile
+end
+###############################################################################
+
+###############################################################################
+# Load user shell scripts
+# Use file name *.sudo.sh for scripts to be run with sudo privileges,
+# use file name *.sh for scripts to be run with user privileges.
+###############################################################################
+Vagrant.configure("2") do |config|
+  Dir.glob('*.sh') do |scriptfile|
+    if scriptfile.end_with? ".sudo.sh"
+      config.vm.provision :shell, path: scriptfile
+    else
+      config.vm.provision :shell, privileged: false, path: scriptfile
+    end
+  end
+end
+###############################################################################

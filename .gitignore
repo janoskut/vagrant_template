@@ -1,0 +1,8 @@
+# Exclude user script files
+/*.sh
+
+# Exclude user vagrant files
+/*.vagrant
+
+# Exclude vagrant logfiles
+/*.log
