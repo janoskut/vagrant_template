@@ -35,3 +35,7 @@ adjust the vagrant and provider settings.
 
 Vagrant-files will be processed first, followed by the script files.
 All files are executed in their alphabetical order.
+
+### Agnoster theme
+
+The [Agnoster theme](https://github.com/agnoster/agnoster-zsh-theme) requires a [Powerline-patched font](https://github.com/Lokaltog/powerline-fonts), e.g. [Source Code Pro](https://github.com/powerline/fonts/tree/master/SourceCodePro).
